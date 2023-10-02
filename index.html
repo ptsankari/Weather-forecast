@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Roboto&display=swap" rel="stylesheet">
+    <title>Weather Forecast</title>
+    
+</head>
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url(bg.jpg.jpg);
+    background-size: cover;
+
+}
+
+header {
+    background-color:#7CB9E8;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+input[type="text"] {
+    padding: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
+main {
+    padding: 20px;
+    text-align: center;
+}
+
+.weather-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.weather-card h2 {
+    font-size: 18px;
+}
+
+.weather-card img {
+    width: 50px;
+}
+
+</style>
+<body>
+    <header>
+        <h1>Weather Forecast</h1>
+        <br><br>
+        <input type="text" id="cityInput" placeholder="Enter a city">
+        <button id="searchBtn">Search</button>
+    </header>
+    <main>
+        <div class="weather-card-container" id="weatherCards">
+            <!-- Weather cards will be added here -->
+        </div>
+    </main>
+    <script>
+        const apiKey = '0175f8e5dfd47d924bed731aaa26840b'; 
+const searchBtn = document.getElementById('searchBtn');
+const cityInput = document.getElementById('cityInput');
+const weatherCards = document.getElementById('weatherCards');
+
+searchBtn.addEventListener('click', () => {
+    const city = cityInput.value;
+    if (city) {
+        fetchWeatherData(city);
+    }
+});
+
+function fetchWeatherData(city) {
+    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            displayWeather(data);
+        })
+        .catch(error => {
+            console.error('Error fetching weather data:', error);
+        });
+}
+
+function displayWeather(data) {
+    weatherCards.innerHTML = '';
+
+    for (let i = 0; i < data.list.length; i += 8) {
+        const forecast = data.list[i];
+        const date = new Date(forecast.dt * 1000);
+        const iconUrl = `https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`;
+
+        const weatherCard = document.createElement('div');
+        weatherCard.classList.add('weather-card');
+        weatherCard.innerHTML = `
+            <h2>${date.toDateString()}</h2>
+            <img src="${iconUrl}" alt="${forecast.weather[0].description}">
+            <p>Temperature: ${forecast.main.temp}°C</p>
+            <p>Humidity: ${forecast.main.humidity}%</p>
+            <p>Weather: ${forecast.weather[0].description}</p>
+        `;
+
+        weatherCards.appendChild(weatherCard);
+    }
+}
+
+    </script>
+</body>
+</html>
+
